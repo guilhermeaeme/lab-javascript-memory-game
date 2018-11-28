@@ -33,7 +33,7 @@ $(document).ready(function(){
   var $pairs_clicked = $('#pairs_clicked');
   var $pairs_guessed = $('#pairs_guessed');
 
-  memoryGame.shuffleCards();
+  // memoryGame.shuffleCards();
 
   memoryGame.cards.forEach(function (pic) {
     html += '<div class="card" data-card-name="'+ pic.name +'">';
@@ -49,29 +49,35 @@ $(document).ready(function(){
   $('.back').click(function () {
     var card = $(this).parent().data('card-name');
 
-    if(memoryGame.pickedCards.length == 2) {
-      $('.card.active:not(.blocked)').find('.back, .front').toggleClass('front back');
-      $('.card:not(.blocked)').removeClass('active');
-
-      memoryGame.pickedCards = [];
-    }
-
-    memoryGame.pickedCards.push(card);
+    memoryGame.pickedCards.push($(this).parent());
 
     $(this).parent().addClass('active');
     $(this).parent().find('.back, .front').toggleClass('front back');
 
     if(memoryGame.pickedCards.length == 2) {
-      var result = memoryGame.checkIfPair(memoryGame.pickedCards[0], memoryGame.pickedCards[1]);
+      var result = memoryGame.checkIfPair(memoryGame.pickedCards[0].data('card-name'), memoryGame.pickedCards[1].data('card-name'));
 
-      if(result){
-        $('.card[data-card-name="' + card + '"]').addClass('blocked').find('.front, .back').addClass('blocked');
-      }
+      $('.back,.front').addClass('blocked');
 
       $pairs_clicked.html(memoryGame.pairsClicked);
       $pairs_guessed.html(memoryGame.pairsGuessed);
+
+      if(result){
+        $('.card[data-card-name="' + card + '"]').addClass('blocked').find('.front, .back').addClass('blocked');
+
+        return nextTurn();
+      }
+
+      setTimeout(nextTurn, 1000);
     }
   });
 });
 
+function nextTurn() {
+  $('.back,.front').removeClass('blocked');
 
+  $('.card.active:not(.blocked)').find('.back, .front').toggleClass('front back');
+  $('.card:not(.blocked)').removeClass('active');
+
+  memoryGame.pickedCards = [];
+}
