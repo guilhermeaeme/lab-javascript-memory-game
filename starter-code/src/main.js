@@ -25,9 +25,16 @@ var cards = [
   { name: 'thor',            img: 'thor.jpg' }
 ];
 
+var memoryGame = new MemoryGame(cards);
+
 $(document).ready(function(){
-  var memoryGame = new MemoryGame(cards);
   var html = '';
+
+  var $pairs_clicked = $('#pairs_clicked');
+  var $pairs_guessed = $('#pairs_guessed');
+
+  memoryGame.shuffleCards();
+
   memoryGame.cards.forEach(function (pic) {
     html += '<div class="card" data-card-name="'+ pic.name +'">';
     html += '  <div class="back" name="'+ pic.img +'"></div>';
@@ -40,7 +47,30 @@ $(document).ready(function(){
 
   // Bind the click event of each element to a function
   $('.back').click(function () {
-    // TODO: write some code here
+    var card = $(this).parent().data('card-name');
+
+    if(memoryGame.pickedCards.length == 2) {
+      $('.card.active:not(.blocked)').find('.back, .front').toggleClass('front back');
+      $('.card:not(.blocked)').removeClass('active');
+
+      memoryGame.pickedCards = [];
+    }
+
+    memoryGame.pickedCards.push(card);
+
+    $(this).parent().addClass('active');
+    $(this).parent().find('.back, .front').toggleClass('front back');
+
+    if(memoryGame.pickedCards.length == 2) {
+      var result = memoryGame.checkIfPair(memoryGame.pickedCards[0], memoryGame.pickedCards[1]);
+
+      if(result){
+        $('.card[data-card-name="' + card + '"]').addClass('blocked').find('.front, .back').addClass('blocked');
+      }
+
+      $pairs_clicked.html(memoryGame.pairsClicked);
+      $pairs_guessed.html(memoryGame.pairsGuessed);
+    }
   });
 });
 
