@@ -33,7 +33,7 @@ $(document).ready(function(){
   var $pairs_clicked = $('#pairs_clicked');
   var $pairs_guessed = $('#pairs_guessed');
 
-  // memoryGame.shuffleCards();
+  memoryGame.shuffleCards();
 
   memoryGame.cards.forEach(function (pic) {
     html += '<div class="card" data-card-name="'+ pic.name +'">';
