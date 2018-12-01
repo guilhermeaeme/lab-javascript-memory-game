@@ -6,6 +6,10 @@ var MemoryGame = function (cards) {
 };
 
 MemoryGame.prototype.shuffleCards = function () {
+  this.pickedCards = [];
+  this.pairsClicked = 0;
+  this.pairsGuessed = 0;
+
 	for (var i = this.cards.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));
         var temp = this.cards[i];

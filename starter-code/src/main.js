@@ -26,27 +26,17 @@ var cards = [
 ];
 
 var memoryGame = new MemoryGame(cards);
+var $pairs_clicked = null;
+var $pairs_guessed = null;
 
 $(document).ready(function(){
-  var html = '';
+  $pairs_clicked = $('#pairs_clicked');
+  $pairs_guessed = $('#pairs_guessed');
 
-  var $pairs_clicked = $('#pairs_clicked');
-  var $pairs_guessed = $('#pairs_guessed');
-
-  memoryGame.shuffleCards();
-
-  memoryGame.cards.forEach(function (pic) {
-    html += '<div class="card" data-card-name="'+ pic.name +'">';
-    html += '  <div class="back" name="'+ pic.img +'"></div>';
-    html += '  <div class="front" style="background: url(img/'+ pic.img +') no-repeat"></div>';
-    html += '</div>';
-  });
-
-  // Add all the div's to the HTML
-  $('#memory_board').html(html);
+  buildBoard();
 
   // Bind the click event of each element to a function
-  $('.back').click(function () {
+  $('body').delegate('.back', 'click', function () {
     var card = $(this).parent().data('card-name');
 
     memoryGame.pickedCards.push($(this).parent());
@@ -61,6 +51,14 @@ $(document).ready(function(){
 
       $pairs_clicked.html(memoryGame.pairsClicked);
       $pairs_guessed.html(memoryGame.pairsGuessed);
+
+      if(memoryGame.isFinished()) {
+        setTimeout(function(){
+          if(confirm('Play again?')){
+            buildBoard();
+          }
+        }, 500)
+      }
 
       if(result){
         $('.card[data-card-name="' + card + '"]').addClass('blocked').find('.front, .back').addClass('blocked');
@@ -80,4 +78,25 @@ function nextTurn() {
   $('.card:not(.blocked)').removeClass('active');
 
   memoryGame.pickedCards = [];
+}
+
+function buildBoard() {
+  var html = '';
+
+  memoryGame.shuffleCards();
+
+  memoryGame.cards.forEach(function (pic) {
+    html += '<div class="card" data-card-name="'+ pic.name +'">';
+    html += '  <div class="back" name="'+ pic.img +'"></div>';
+    html += '  <div class="front" style="background: url(img/'+ pic.img +') no-repeat"></div>';
+    html += '</div>';
+  });
+
+  // Add all the div's to the HTML
+  $('#memory_board').html(html);
+
+  $pairs_clicked.html(memoryGame.pairsClicked);
+  $pairs_guessed.html(memoryGame.pairsGuessed);
+
+  nextTurn();
 }
